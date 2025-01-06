@@ -38,7 +38,6 @@ docker run -d \
     -e RUNNER_URL="https://github.com/<your-org-or-user>/<repository-name>" \
     -e RUNNER_TOKEN="<self-hosted-runner-token>" \
     -e RUNNER_NAME="docker-runner" \
-    -e RUNNER_WORKDIR="/home/runner/actions-runner" \
     github-runner
 ```
 

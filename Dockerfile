@@ -1,16 +1,15 @@
 FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
-# Install dependencies
-RUN apt-get update && apt-get install -y \
-    curl tar git jq \
-    && rm -rf /var/lib/apt/lists/*
-
 # Set environment variables
 ENV RUNNER_VERSION=2.321.0
 ENV RUNNER_WORKDIR=/home/runner/actions-runner
+ENV DEBIAN_FRONTEND=noninteractive
+ENV RUNNER_WORKDIR=/home/runner/actions-runner
 
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    curl tar git jq make \
+    && rm -rf /var/lib/apt/lists/*
 
 # Create directory for the runner
 RUN mkdir -p $RUNNER_WORKDIR
