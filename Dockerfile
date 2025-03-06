@@ -36,4 +36,4 @@ COPY --chown=runner:runner entrypoint.sh .
 # Set execute permissions
 RUN chmod +x entrypoint.sh
 
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["/bin/bash", "/home/runner/actions-runner/entrypoint.sh"]
