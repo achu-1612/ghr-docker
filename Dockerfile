@@ -1,10 +1,8 @@
-FROM ubuntu:22.04
+FROM debian:stable-slim
 
 # Set environment variables
-ENV RUNNER_VERSION=2.321.0
 ENV RUNNER_WORKDIR=/home/runner/actions-runner
 ENV DEBIAN_FRONTEND=noninteractive
-ENV RUNNER_WORKDIR=/home/runner/actions-runner
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
@@ -16,11 +14,12 @@ RUN mkdir -p $RUNNER_WORKDIR
 WORKDIR $RUNNER_WORKDIR
 
 # Download and install the GitHub Actions runner
-RUN curl -o actions-runner.tar.gz -L https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz \
+RUN RUNNER_VERSION=$(curl --silent "https://api.github.com/repos/actions/runner/releases/latest" | jq -r '.tag_name[1:]') \
+    && curl -o actions-runner.tar.gz -L https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz \
     && tar xzf actions-runner.tar.gz \
     && rm -f actions-runner.tar.gz
 
-    # Install dependencies and runner dependencies
+# Install dependencies and runner dependencies
 RUN ./bin/installdependencies.sh
 
 # Create a non-root user
