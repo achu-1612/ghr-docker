@@ -33,6 +33,7 @@ WORKDIR $RUNNER_WORKDIR
 COPY --chown=runner:runner entrypoint.sh .
 
 # Set execute permissions
+RUN sed -i 's/\r$//' entrypoint.sh
 RUN chmod +x entrypoint.sh
 
 ENTRYPOINT ["/bin/bash", "/home/runner/actions-runner/entrypoint.sh"]

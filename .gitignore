@@ -1,0 +1,5 @@
+# Profiles file (contains sensitive configuration)
+.profiles.json
+
+# Docker volumes and runtime data
+*.log
