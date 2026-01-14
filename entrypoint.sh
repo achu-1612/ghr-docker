@@ -19,7 +19,7 @@ cleanup() {
 }
 
 # Trap signals for graceful shutdown
-trap cleanup SIGTERM SIGINT SIGQUIT EXIT
+trap cleanup SIGTERM SIGINT SIGQUIT
 
 # Configuring the GitHub Actions Runner
 if [ ! -f .runner ]; then
@@ -41,6 +41,3 @@ RUNNER_PID=$!
 
 # Wait for the runner to finish (while handling signals)
 wait $RUNNER_PID || true
-
-# Ensure cleanup runs when the runner exits
-cleanup
