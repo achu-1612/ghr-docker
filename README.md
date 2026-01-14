@@ -1,105 +1,97 @@
 # GitHub Actions Self-Hosted Runner in Docker
 
-This repository provides a Dockerized setup for running a GitHub Actions self-hosted runner. It creates an isolated and lightweight environment, enabling you to run workflows efficiently on your own infrastructure.
-
-## Features
-- Runs as a non-root user for enhanced security.
-- Automatically installs and configures the GitHub Actions runner.
-- Supports easy deployment using Docker.
+Profile-based Docker setup for managing GitHub Actions self-hosted runners. Supports both repository and organization-level runners with automated token management via GitHub CLI.
 
 ## Prerequisites
-- Docker installed on your machine.
-- A GitHub Runner Token for registration.
 
-## Usage
+- Docker
+- GitHub CLI (`gh`) authenticated: `gh auth login`
+- Bash shell
+- jq
 
-### 1. Build the Docker Image
-
-Clone this repository and navigate to the directory:
-
-```bash
-git clone https://github.com/achu-1612/ghr-docker
-cd ghr-docker
-```
-
-Build the Docker image:
+## Quick Start
 
 ```bash
-docker build -t github-runner .
+# Create a profile
+make profiles create
+
+# Deploy runners
+make run
+
+# Check status
+make status
 ```
 
-### 2. Run the Container
-
-Run the container with the required environment variables:
+## Commands
 
 ```bash
-docker run -d \
-    --name self-hosted-runner \
-    -e RUNNER_URL="https://github.com/<your-org-or-user>/<repository-name>" \
-    -e RUNNER_TOKEN="<self-hosted-runner-token>" \
-    -e RUNNER_NAME="docker-runner" \
-    github-runner
+make build           # Build Docker image
+make run             # Deploy runners (interactive)
+make restart         # Restart containers
+make redeploy        # Remove + rebuild + deploy
+make stop            # Stop all runners
+make logs            # View logs
+make status          # Show status
+make deregister      # Deregister from GitHub
+make remove          # Full cleanup (deregister + remove)
+
+make profiles create
+make profiles list
+make profiles show
+make profiles delete
 ```
 
-Replace the placeholders:
-- `<your-org-or-user>/<repository-name>`: Repository details
-- `<self-hosted-runner-token>`: Runner registration token `[Repository Settings -> Actions -> Runners -> New self-hosted runner]`
+## Options
 
-### 3. Verify the Runner
-
-Go to your GitHub repository or organization settings:
-
-- Navigate to **Settings** → **Actions** → **Runners**.
-- You should see the runner listed as `docker-runner` and ready for use.
-
-## Stopping and Removing the Runner
-
-To stop the container:
+Pass options after the command (e.g., `make run --profile myproject`)
 
 ```bash
-docker stop self-hosted-runner
+--profile <name>     # Use saved profile
+--owner <name>       # GitHub username or org
+--repo <name>        # Repository (omit for org-level)
+--prefix <name>      # Runner name prefix
+--count <number>     # Number of runners
 ```
 
-To remove the container:
+## Examples
 
 ```bash
-docker rm self-hosted-runner
+# Repository-level runners
+make run --owner username --repo my-repo --count 3
+
+# Organization-level runners  
+make run --owner myorg --count 2
+
+# Using profiles
+make run --profile myproject
+make redeploy --profile myproject
+make remove --profile myproject
 ```
 
-## Customization
+## Profile Configuration
 
-### Environment Variables
+Profiles are stored in `.profiles.json`:
 
-| Variable          | Description                                                |
-|-------------------|------------------------------------------------------------|
-| `RUNNER_URL`      | GitHub repository, user, or organization URL.              |
-| `RUNNER_TOKEN`    | Personal Access Token for authenticating the runner.       |
-| `RUNNER_NAME`     | (Optional) Name for the runner. Defaults to hostname.      |
-| `RUNNER_WORKDIR`  | (Optional) Working directory for the runner.               |
-
-### Updating Runner Version
-
-To update the GitHub Actions runner version, edit the `RUNNER_VERSION` in the `Dockerfile`:
-
-```dockerfile
-ENV RUNNER_VERSION=2.321.0
+```json
+{
+  "profile-name": {
+    "OWNER": "github-username-or-org",
+    "REPO": "repository-name",
+    "RUNNER_NAME_PREFIX": "docker-runner",
+    "RUNNER_COUNT": 1
+  }
+}
 ```
 
-Rebuild the Docker image:
+## Troubleshooting
 
-```bash
-docker build -t github-runner .
-```
+**Authentication error**: Check `gh auth status` and ensure admin access
 
-## Contributing
+**View logs**: `make logs` or `docker logs <container-name>`
 
-Contributions are welcome! Feel free to open an issue or submit a pull request.
+**Cleanup offline runners**: `make deregister --profile <name>`
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
-
----
-
-If you have questions or run into issues, please open an issue in this repository.
+[MIT License](LICENSE)
 

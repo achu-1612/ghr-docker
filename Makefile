@@ -27,9 +27,6 @@ logs:
 status:
 	@$(RUNNER_SCRIPT) status
 
-clean:
-	@$(RUNNER_SCRIPT) clean
-
 deregister:
 	@$(RUNNER_SCRIPT) deregister
 
